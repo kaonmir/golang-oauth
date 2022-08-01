@@ -10,14 +10,12 @@ import (
 	"github.com/kaonmir/OAuth/models"
 )
 
-var userModel = new(models.User)
-
-func GetUserById(c *gin.Context) {
+func GetUserByID(c *gin.Context) {
 	id := c.Query("id")
 	password := c.Query("password")
 
 	if id != "" {
-		user, err := userModel.GetByID(id, password)
+		user, err := models.UserModel.GetByID(id, password)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "Error to retrieve user", "error": err.Error()})
 			c.Abort()
@@ -47,7 +45,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := userModel.Signup(userPayload)
+	user, err := models.UserModel.Signup(userPayload)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error to create user", "error": err.Error()})

@@ -24,15 +24,29 @@ func NewRouter() *gin.Engine {
 			"content": "This is an index page...",
 		})
 	})
+	router.GET("/naver", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "naver.html", gin.H{})
+	})
+	router.GET("/callback", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "callback.html", gin.H{})
+	})
 
 	// router.Use(middlewares.AuthMiddleware())
 
-	v1 := router.Group("v1")
+	api := router.Group("api")
 	{
-		userGroup := v1.Group("user")
+		v1 := api.Group("v1")
 		{
-			userGroup.POST("/", controllers.CreateUser)
-			userGroup.GET("/", controllers.GetUserById)
+			userGroup := v1.Group("user")
+			{
+				userGroup.POST("/", controllers.CreateUser)
+				userGroup.GET("/", controllers.GetUserByID)
+
+				callback := userGroup.Group("callback")
+				{
+					callback.GET("/naver", controllers.NaverCallBackHandler)
+				}
+			}
 		}
 	}
 	return router

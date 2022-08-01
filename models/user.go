@@ -13,9 +13,11 @@ import (
 
 var hash256 = sha256.New()
 
+var UserModel = new(User)
+
 type User struct {
-	Id       string `json:"id"`
-	UserId   string `json:"user_id"`
+	ID       string `json:"id"`
+	UserID   string `json:"user_id"`
 	Name     string `json:"name"`
 	Gender   string `json:"gender"`
 	Password string `json:"password"`
@@ -26,8 +28,8 @@ func (h User) Signup(userPayload forms.UserSignup) (*User, error) {
 	id := uuid.NewV4()
 
 	user := User{
-		Id:       id.String(),
-		UserId:   userPayload.Id,
+		ID:       id.String(),
+		UserID:   userPayload.ID,
 		Name:     userPayload.Name,
 		Gender:   userPayload.Gender,
 		Password: hashPassword(userPayload.Password),
@@ -38,7 +40,7 @@ func (h User) Signup(userPayload forms.UserSignup) (*User, error) {
 		return nil, err
 	}
 
-	err = db.Set(user.UserId, string(b), 0).Err()
+	err = db.Set("user/"+user.UserID, string(b), 0).Err()
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +53,7 @@ func (h User) GetByID(id string, password string) (*User, error) {
 
 	db := db.GetDB()
 
-	result, err := db.Get(id).Result()
+	result, err := db.Get("user/" + id).Result()
 	if err != nil {
 		return nil, err
 	}
